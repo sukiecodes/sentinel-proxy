@@ -1,7 +1,7 @@
 // Simple HTTP server that listens on a port provided through command line arguments and returns a message for a request
 // Will be used as a dummy backend service to test our sentinel proxy
 
-package backend
+package main
 
 import (
 	"fmt" // general I/O formatting
