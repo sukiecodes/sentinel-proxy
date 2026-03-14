@@ -24,13 +24,14 @@ func Ping(b *Backend) bool {
 		return false
 	} 
 
+	// clean up response body immediately
+	// placing this here so that we know resp exists and that there are no errors
+	defer resp.Body.Close()
+
 	if resp.StatusCode != http.StatusOK {
 		log.Printf("Ping failed for %s: Status %d", b.URL, resp.StatusCode)
 		return false
 	}
-
-	// clean up response body immediately
-	defer resp.Body.Close()
 
 	return true 
 }
