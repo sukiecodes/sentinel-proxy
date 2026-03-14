@@ -13,6 +13,14 @@ func Proxy(serverPool *lb.ServerPool) http.HandlerFunc {
 		peer := serverPool.GetNextPeer() // ask balancer for next available backend
 
 		if peer != nil {
+			peer.ReverseProxy.ErrorHandler = func(w http.ResponseWriter, r *http.Request, e error) {
+				log.Printf("Passive check: marking %s as down due to error: %v", peer.URL, e)
+				// mark the backend as dead immediately
+				peer.SetAlive(false)
+
+				// return a 503 service unavailable error
+				http.Error(w, "Service Unavailable", http.StatusServiceUnavailable)
+			}
 			log.Printf("Proxying request from %s to %s", r.RemoteAddr, peer.URL)
 			
 			// use built-in reverse proxy to forward the request
